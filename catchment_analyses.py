@@ -20,9 +20,9 @@ mask = {}
 for location_id in locations:
     try: 
         mask_path = '/pool0/data/orianac/FROM_RAID9/temp/remapped/remapUH_{}.nc'.format(location_id)
+        mask[location_id] = xr.open_dataset(mask_path).fraction
     except: 
         print('Failed to open mask: {}'.format(mask_path))
-    mask[location_id] = xr.open_dataset(mask_path).fraction
 
 
 for (hydro_model, path_parameter_name, official_convention) in hydro_model_list:
