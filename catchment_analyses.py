@@ -15,6 +15,13 @@ hydro_model_list = [('VIC', 'calib_inverse', 'P1'),
 downscaling = 'maca'
 locations = pd.read_csv('./rupp_et_al_2020_locations.csv', header=None)[0].values
 
+# Load all the masks
+mask = {}
+for location_id in locations:
+    mask_path = '/pool0/data/orianac/FROM_RAID9/temp/remapped/remapUH_{}.nc'.format(location_id)
+    mask[location_id] = xr.open_dataset(mask_path).fraction
+
+
 for (hydro_model, path_parameter_name, official_convention) in hydro_model_list:
     for scenario in scenario_list:
         for gcm in gcm_list:
@@ -38,9 +45,7 @@ for (hydro_model, path_parameter_name, official_convention) in hydro_model_list:
                             gcm=gcm)
                 try:
                     print('Processing file {} for location {}'.format(file_path, location_id))
-                    mask_path = '/pool0/data/orianac/FROM_RAID9/temp/remapped/remapUH_{}.nc'.format(location_id)
-                    mask = xr.open_dataset(mask_path).fraction
-                    data_subset = data.where(mask)
+                    data_subset = data.where(mask[location_id])
                     data_subset.mean(dim=['lat', 'lon']).to_netcdf(out_path)
                 except:
                     print('Oh no! Something failed for {} for location {}'.format(file_path, location_id))
