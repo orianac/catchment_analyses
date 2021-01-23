@@ -15,17 +15,17 @@ hydro_model_list = [('VIC', 'calib_inverse', 'P1'),
 downscaling = 'maca'
 locations = pd.read_csv('./rupp_et_al_2020_locations.csv', header=None)[0].values
 
-
-for location_id in locations:
-    for gcm in gcm_list:
-        for scenario in scenario_list:
-            for (hydro_model, path_parameter_name, official_convention) in hydro_model_list:
+for (hydro_model, path_parameter_name, official_convention) in hydro_model_list:
+    for scenario in scenario_list:
+        for gcm in gcm_list:
+            for location_id in locations:
                 file_path = '/pool0/data/orianac/bpa/output_files_from_hyak/output_files/merged.19500101-20991231.nc.{hydro_model}.{downscaling}.{scenario}.{path_parameter_name}.{gcm}'.format(hydro_model=hydro_model,
                             downscaling=downscaling,
                             scenario=scenario,
                             path_parameter_name=path_parameter_name,
                             gcm=gcm)
-                out_path = '/pool0/data/orianac/crcc/rupp_et_al_2020/catchment_mean_19500101-20991231_{scenario}_{gcm}_{downscaling}_{hydro_model}-{official_convention}.nc'.format(hydro_model=hydro_model,
+                out_path = '/pool0/data/orianac/crcc/rupp_et_al_2020/catchment_{location_id}_mean_19500101-20991231_{scenario}_{gcm}_{downscaling}_{hydro_model}-{official_convention}.nc'.format(location_id=location_id,
+                        hydro_model=hydro_model,
                             downscaling=downscaling,
                             scenario=scenario,
                             official_convention=official_convention,
