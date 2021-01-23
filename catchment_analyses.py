@@ -18,7 +18,10 @@ locations = pd.read_csv('./rupp_et_al_2020_locations.csv', header=None)[0].value
 # Load all the masks
 mask = {}
 for location_id in locations:
-    mask_path = '/pool0/data/orianac/FROM_RAID9/temp/remapped/remapUH_{}.nc'.format(location_id)
+    try: 
+        mask_path = '/pool0/data/orianac/FROM_RAID9/temp/remapped/remapUH_{}.nc'.format(location_id)
+    except: 
+        print('Failed to open mask: {}'.format(mask_path))
     mask[location_id] = xr.open_dataset(mask_path).fraction
 
 
@@ -32,9 +35,10 @@ for (hydro_model, path_parameter_name, official_convention) in hydro_model_list:
                         path_parameter_name=path_parameter_name,
                         gcm=gcm)
             try:
+                print('Processing data file: {}'.format(file_path))
                 data = xr.open_dataset(file_path)
             except:
-                print('Failed to open {}'.format(file_path))
+                print('Failed to open data file: {}'.format(file_path))
 
             for location_id in locations:
                 out_path = '/pool0/data/orianac/crcc/rupp_et_al_2020/catchment_{location_id}_mean_19500101-20991231_{scenario}_{gcm}_{downscaling}_{hydro_model}-{official_convention}.nc'.format(location_id=location_id,
@@ -44,7 +48,7 @@ for (hydro_model, path_parameter_name, official_convention) in hydro_model_list:
                             official_convention=official_convention,
                             gcm=gcm)
                 try:
-                    print('Processing file {} for location {}'.format(file_path, location_id))
+                    print('\tProcessing location {}'.format(location_id))
                     data_subset = data.where(mask[location_id])
                     data_subset.mean(dim=['lat', 'lon']).to_netcdf(out_path)
                 except:
